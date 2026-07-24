@@ -1,0 +1,43 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test on Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.11", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      - name: Run tests
+        run: python -m pytest -q
+
+      - name: End-to-end smoke test over real HTTP
+        run: |
+          agent-eval --version
+          agent-eval list-graders
+          python examples/mock_target.py &
+          MOCK_PID=$!
+          for i in $(seq 1 20); do
+            python -c "import socket; socket.create_connection(('127.0.0.1', 8900), 0.2)" 2>/dev/null && break
+            sleep 0.2
+          done
+          # The example suite must be fully green against the faithful mock agent.
+          agent-eval run examples/mock.suite.json --no-llm --no-color
+          kill $MOCK_PID
