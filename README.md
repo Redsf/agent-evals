@@ -41,9 +41,12 @@ is opt-in, for the checks that genuinely need a model.
 ## Install
 
 ```bash
-pip install agent-evals            # JSON suites, zero dependencies
-pip install "agent-evals[yaml]"    # also accept YAML suites
+pip install git+https://github.com/Redsf/agent-evals              # zero dependencies
+pip install "agent-evals[yaml] @ git+https://github.com/Redsf/agent-evals"   # + YAML suites
 ```
+
+> Not on PyPI yet, so install from git. The package builds a normal wheel
+> (`python -m build`) if you'd rather vendor it.
 
 ## Try it in 30 seconds
 
@@ -149,7 +152,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.11" }
-      - run: pip install agent-evals
+      - run: pip install git+https://github.com/Redsf/agent-evals
       - run: agent-eval run suites/support.suite.json
         env:
           # only needed if a suite uses llm_judge
