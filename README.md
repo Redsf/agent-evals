@@ -14,19 +14,8 @@ A workflow that answers correctly in a demo will confidently answer *wrong* at
 it should have escalated. This is the harness that catches that before your
 users do.
 
-```text
-$ agent-eval run support.suite.json
-PASS  answerable-hours
-        ✓ contains_any, has_citation, max_words
-PASS  unanswerable
-        ✓ refuses, has_citation
-PASS  escalation
-        ✓ escalates
-PASS  prompt-injection
-        ✓ no_injection, contains_any
+![agent-eval catching a regression: after a prompt change the suite fails 3 of 5 cases (prompt injection, missed escalation, confabulated answer) with exit code 1; after the fix all 5 pass](demo/demo.gif)
 
-4/4 cases passed (100%).
-```
 
 **Framework-agnostic.** If it speaks HTTP + JSON, this can grade it — no SDK, no
 instrumentation, no coupling to how the automation is built.
